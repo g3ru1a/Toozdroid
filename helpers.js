@@ -39,7 +39,7 @@ exports.isCommand = function (message, prefix) {
  * @param {string} color
  * @param {string} description
  */
-exports.logCommand = function (message, category, title, description = "", color = "#de4ba8") {
+exports.log = function (message, category, title, description = "", color = "#de4ba8") {
     let user = message.author;
     let embed = new Discord.MessageEmbed()
         .setAuthor(user.tag, user.avatarURL())
@@ -50,11 +50,12 @@ exports.logCommand = function (message, category, title, description = "", color
     if (description.length > 0) {
         embed.setDescription(description);
     }
-    let logChannels = global.config.LOG_CHS;
-    for (let i = 0; i < logChannels.length; i++) {
-        let ch = message.guild.channels.cache.find(channel => channel.id === logChannels[i].id);
+    let channels = global.config.WORK_CHANNELS;
+    for (let i = 0; i < channels.length; i++) {
+        if (channels[i].purpose != "log") continue;
+        let ch = message.guild.channels.cache.find(channel => channel.id === channels[i].id);
         if (ch == undefined) {
-            console.warn("Missing Log channel with id:" + logChannels[i].name + "!");
+            console.warn("Missing Log channel " + channels[i].name + " with purpose " + channels[i].purpose + "!");
             continue;
         }
         ch.send(embed);
@@ -68,5 +69,34 @@ exports.saveConfig = function () {
         fs.writeFileSync(configFilePath, JSON.stringify(global.config, null, 4));
         global.config = JSON.parse(fs.readFileSync(configFilePath));
     } catch (err) { console.error(err) }
+}
+//#endregion
+
+//#region [Function] check if user can speak in current channel
+/**
+ * Check if user can speak in channel, optional: notify the user if he can't speak there.
+ * 
+ * @param {Discord.Message} message
+ * @param {boolean} notify
+ * 
+ * @returns {boolean}
+ */
+exports.canSpeakInChannel = function (message, notify = false) {
+    //Get all registered channels
+    let channels = global.config.WORK_CHANNELS;
+    //Check if current channel is registered
+    let channel = channels.find(ch => ch.id == message.channel.id);
+    //If channel is not register then the user can speak
+    if (channel == undefined) return true;
+    //Get user roles
+    let userRoles = message.member.roles.cache;
+    //Check user roles agains the roles that can speak in the current channel
+    let roleMatch = userRoles.some(r => channel.canSpeak.indexOf(r.id) >= 0);
+    //If the role is in the list, user can speak
+    if (roleMatch) return true;
+    //If not, user can't speak
+    //Check if the bot should notify the user about this
+    if (notify) message.author.send("Hey! You can't speak in <#" + channel.id + ">");
+    return false;
 }
 //#endregion
