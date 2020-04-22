@@ -53,7 +53,7 @@ exports.showOverview = function (message) {
     let c = global.config;
     embed.setAuthor("Config Overview", message.guild.me.user.avatarURL());
     embed.setDescription("Prefix is `" + c.PREFIX + "`\nCan Reuse Codes " + ((c.REUSE_CODES) ? '✅' : '❎') + "\nAllow Figure Duplicates " + ((c.ACC_DUPES) ? '✅' : '❎'));
-    embed.addField('\u200b', '\u200b');
+    if (c.WORK_CHANNELS.length > 0) embed.addField('\u200b', '\u200b');
     for (channel of c.WORK_CHANNELS) {
         let speakers = "";
         for (sp of channel.canSpeak) {
