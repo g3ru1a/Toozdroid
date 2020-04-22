@@ -38,6 +38,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 const token = env.BOT_TOKEN;
 const Helpers = require("./helpers");
+const ConfigNode = require("./config_node/config");
 
 client.on("ready", () => {
     console.info("Bot Ready");
@@ -49,7 +50,34 @@ client.on("message", (message) => {
         if (!Helpers.canSpeakInChannel(message, notify = true)) message.delete();
         return;
     }
-    Helpers.log(message, "New Message", `User sent message in ${message.channel} .`, message.content);
+
+    ConfigNode.run(message);
 });
 
 client.login(token);
+
+//#region Custom functions for default types
+
+Array.prototype.unique = function () {
+    var a = this.concat();
+    for (var i = 0; i < a.length; ++i) {
+        for (var j = i + 1; j < a.length; ++j) {
+            if (a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+
+    return a;
+};
+String.prototype.capitalize = function () {
+    let words = this.split(" ");
+    let cap = "";
+    for (let i = 0; i < words.length; i++) {
+        let nw = words[i].toLowerCase();
+        nw = nw.charAt(0).toUpperCase() + nw.slice(1);
+        cap += nw + " ";
+    }
+    return cap;
+}
+
+//#endregion
