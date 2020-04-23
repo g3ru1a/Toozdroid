@@ -19,9 +19,9 @@ exports.run = async function (message) {
             "vote": () => parent.vote(message, args),
             "unvote": () => parent.unvote(message, args),
             "rank": () => parent.showRank(message, args),
-            "top": () => parent.top(message, args),
+            "top": () => parent.showTop(message, args),
             "list": () => parent.list(message, args),
-            "remove": () => parent.remove(message),
+            "remove": () => parent.removeVotes(message, args),
             "help": () => parent.showHelpMenu(message)
         }
 
