@@ -264,6 +264,24 @@ exports.list = async function (message, args) {
     rep.delete({ timeout: 10000 }).then(message.delete()).catch();
 }
 
+exports.showHelpMenu = function (message) {
+    let prefix = global.config.PREFIX;
+    const embed = new Discord.MessageEmbed();
+    embed.setAuthor("Toozdroid Figure Requests Help", message.guild.me.user.avatarURL());
+    embed.setDescription("Aliases: `" + prefix + "req` or `" + prefix + "request`");
+    embed.addField("Request/Vote for a figure.", "`" + prefix + "request vote <figureName>`", true);
+    embed.addField("Remove vote for a figure.", "`" + prefix + "request unvote <figureName>`", true);
+    embed.addField("Show Request Position and Info.", "`" + prefix + "request rank <figureName>`", true);
+    embed.addField("Show top n figures.", "`" + prefix + "request top <n>`", true);
+    embed.addField("List all requests. (? - optional argument)", "`" + prefix + "request list <page?> <perPage?>`", true);
+    if (Helpers.isMod(message))
+        embed.addField("Remove all requests for a figure.", "`" + prefix + "request remove <figureName>`", true);
+    embed.setColor(0xFF467F);
+    embed.setTimestamp();
+    embed.setFooter("Figure Requests Help Menu");
+    message.channel.send(embed);
+}
+
 //#region [Helper Functions]
 
 exports.getTopPageEmbed = function (page, perPage, entries, message, n) {
