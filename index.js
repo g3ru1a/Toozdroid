@@ -34,13 +34,17 @@ try {
 
 //#endregion
 
+const mongoose = require("mongoose");
 const Discord = require("discord.js");
 const client = new Discord.Client();
 const token = env.BOT_TOKEN;
 const Helpers = require("./helpers");
 const ConfigNode = require("./config_node/config");
+const RequestsNode = require("./requests_node/requests");
 
 client.on("ready", () => {
+    mongoose.connect(env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+    mongoose.set('useFindAndModify', false);
     console.info("Bot Ready");
 });
 
@@ -52,6 +56,7 @@ client.on("message", (message) => {
     }
 
     ConfigNode.run(message);
+    RequestsNode.run(message);
 });
 
 client.login(token);
