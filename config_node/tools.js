@@ -23,6 +23,7 @@ exports.showOverview = function (message) {
         for (sp of channel.canSpeak) {
             speakers += `<@&${sp}>\n`;
         }
+        if (speakers == "") speakers = "Mods & Admins only";
         embed.addFields(
             { name: 'Channel', value: `<#${channel.id}>`, inline: true },
             { name: 'Purpose', value: channel.purpose, inline: true },

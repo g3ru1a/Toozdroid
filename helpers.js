@@ -120,6 +120,42 @@ exports.canSpeakInChannel = function (message, notify = false) {
 }
 //#endregion
 
+//#region [Function] check if user ran command in right chanel
+
+exports.correctChannelUsed = function (message, purpose, notify = true) {
+    //If user is mod or admin, bypass
+    if (this.isMod(message)) return true;
+    //Get all registered channels
+    let channels = global.config.WORK_CHANNELS;
+    //Check if current channel is registered
+    let channel = channels.find(ch => ch.id == message.channel.id);
+    //If channel is not register then the user can speak
+    if (channel == undefined) {
+        //Get purposed channels;
+        let pc = "";
+        for (let ch of channels) {
+            if (ch.purpose.localeCompare(purpose) == 0) pc += "<#" + ch.id + "> ";
+        }
+        if (pc == "") pc = "No channels available.";
+        //Check if the bot should notify the user about this
+        if (notify) message.reply("Hey! You can't use " + purpose + " commands in <#" + message.channel.id + ">\nInstead run the command in " + pc).then(r => r.delete({ timeout: 5000 }).then(message.delete()));
+        return false;
+    }
+    //If channel matches purpose, approve
+    if (channel.purpose.localeCompare(purpose) == 0) return true;
+    //Get purposed channels;
+    let pc = "";
+    for (let ch of channels) {
+        if (ch.purpose.localeCompare(purpose) == 0) pc += "<#" + ch.id + "> ";
+    }
+    if (pc == "") pc = "No channels available.";
+    //Check if the bot should notify the user about this
+    if (notify) message.reply("Hey! You can't use " + purpose + " commands in <#" + channel.id + ">\nInstead run the command in " + pc).then(r => r.delete({ timeout: 5000 }).then(message.delete() ) );
+    return false;
+}
+
+//#endregion
+
 //#region [Function] send error to g3's dms
 /**
  * Send dm to G3 with the error

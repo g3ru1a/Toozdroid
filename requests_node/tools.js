@@ -26,7 +26,6 @@ exports.vote = async function (message, args) {
                 return;
             }
         }
-        console.log("here");
         //If no existing request was approved, create a new one
         this.createRequest(message, givenName);
     } else {
@@ -110,7 +109,7 @@ exports.showRank = async function (message, args) {
             if (approved) {
                 await this.getRank(message, request).then(rank => {
                     if (rank == null) { message.reply("Something went wrong."); return; }
-                    rank = 1337;
+                    
                     let embed = new Discord.MessageEmbed()
                         .setAuthor("Toozdroid | Figure Requests", message.guild.me.user.avatarURL())
                         .setTitle(request.name + " is placed #" + rank)

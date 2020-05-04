@@ -41,6 +41,7 @@ const token = env.BOT_TOKEN;
 const Helpers = require("./helpers");
 const ConfigNode = require("./config_node/config");
 const RequestsNode = require("./requests_node/requests");
+const CollectionsNode = require("./collections_node/collections");
 
 client.on("ready", () => {
     mongoose.connect(env.DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -57,6 +58,7 @@ client.on("message", (message) => {
 
     ConfigNode.run(message);
     RequestsNode.run(message);
+    CollectionsNode.run(message);
 });
 
 client.login(token);
