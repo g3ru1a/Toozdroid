@@ -263,3 +263,15 @@ exports.editDistance = function (s1, s2) {
     return costs[s2.length];
 }
 //#endregion
+
+//#region [Function] Show help menu
+/**
+ * Display help menu for user
+ *
+ * @param {Discord.Message} message Discord Message object
+ *
+ */
+exports.showHelpMenu = function (message) {
+    message.reply("help menu");
+}
+//#endregion

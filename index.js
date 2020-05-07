@@ -55,7 +55,13 @@ client.on("message", (message) => {
         if (!Helpers.canSpeakInChannel(message, notify = true)) message.delete();
         return;
     }
-
+    //Get args
+    let args = message.content.substr(global.config.PREFIX.length).split(" ");
+    //Check if command is help
+    if (args[0] == "help" && args.length == 1) {
+        Helpers.showHelpMenu(message);
+        return;
+    }
     ConfigNode.run(message);
     RequestsNode.run(message);
     CollectionsNode.run(message);

@@ -18,12 +18,19 @@ exports.run = async function (message) {
             "figs": () => {
                 if (args[2] == "link") parent.link(message, args);
                 else if (args[2] == "unlink") parent.unlink(message, args);
+                else parent.showHelpMenu(message)
             },
             "figures": () => {
                 if (args[2] == "link") parent.link(message, args);
                 else if (args[2] == "unlink") parent.unlink(message, args);
+                else parent.showHelpMenu(message)
             },
-            "rules": () => parent.rule(message, args),
+            "rules": () => {
+                if (args[2] == "add") parent.addRule(message, args);
+                else if (args[2] == "del" || args[2] == "rem" ||
+                    args[2] == "delete" || args[2] == "remove") parent.removeRule(message, args)
+                else parent.showHelpMenu(message)
+            },
             "check-all": () => parent.rule(message),
             "help": () => parent.showHelpMenu(message)
         }
