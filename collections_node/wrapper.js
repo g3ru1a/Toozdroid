@@ -12,6 +12,21 @@ exports.newOwnedFigure = async function (userID, figureID, code) {
     await OF.save().catch();
 }
 
+exports.getOwnedFiguresByCode = async function (code) {
+    let figs = await OwnedFigure.find({ code: code });
+    return figs;
+}
+
+exports.getOwnedFiguresByUserID = async function (userID) {
+    let figs = await OwnedFigure.find({ userID: userID });
+    return figs;
+};
+
+exports.getOwnedFiguresByFigureID = async function (figureID, userID) {
+    let figs = await OwnedFigure.find({ figureID: figureID, userID: userID });
+    return figs;
+};
+
 exports.removeOwnedFigureByUserID = async function (userID) {
     let figs = await OwnedFigure.find({ userID: userID });
     await figs.deleteMany();
@@ -21,8 +36,11 @@ exports.removeOwnedFigureByFigureID = async function (figureID) {
     let figs = await OwnedFigure.find({ figureID: figureID });
     await figs.deleteMany();
 };
+exports.removeOwnedFigureByFigureIDFromUser = async function (figureID, userID) {
+    await OwnedFigure.deleteOne({ figureID: figureID, userID: userID });
+};
 
-exports.removeOwnedFigureByCode = async function (code) {
+exports.removeOwnedFiguresByCode = async function (code) {
     let figs = await OwnedFigure.find({ code: code });
     await figs.deleteMany();
 };
@@ -85,7 +103,11 @@ exports.removeRuleByRoleID = async function (roleID) {
 };
 
 exports.getRulesForNFiguresOrLess = async function (figureCount) {
-    let roles = await Rule.find({ figureCount: { $lt: figureCount } });
+    let roles = await Rule.find({ figureCount: { $lte: figureCount } });
     return roles;
+}
+
+exports.getRules = async () => {
+    return await Rule.find();
 }
 //#endregion

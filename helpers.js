@@ -61,14 +61,18 @@ exports.log = function (message, category, title, description = "", color = "#de
         //Check only on log channels
         if (channels[i].purpose != "log") continue;
         //Get the actual channel
-        let ch = message.guild.channels.cache.find(channel => channel.id === channels[i].id);
-        //If it doesn't exist, report to console and go to next channel
-        if (ch == undefined) {
-            console.warn("Missing Log channel " + channels[i].name + " with purpose " + channels[i].purpose + "!");
-            continue;
+        try {
+            let ch = message.guild.channels.cache.find(channel => channel.id === channels[i].id);
+            //If it doesn't exist, report to console and go to next channel
+            if (ch == undefined) {
+                console.warn("Missing Log channel " + channels[i].name + " with purpose " + channels[i].purpose + "!");
+                continue;
+            }
+            //Otherwise send log
+            ch.send(embed);
+        } catch (err) {
+            //console.err(err);
         }
-        //Otherwise send log
-        ch.send(embed);
     }
 }
 //#endregion

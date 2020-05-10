@@ -11,7 +11,7 @@ exports.run = async function (message) {
     function execute(command, parent) {
         let fn;
         const options = {
-            "add": () => parent.add(message, args),
+            "add": () => parent.addFromCode(message, args),
             "show": () => parent.show(message, args),
             "push": () => parent.push(message, args),
             "remove": () => parent.remove(message, args),
@@ -31,7 +31,6 @@ exports.run = async function (message) {
                     args[2] == "delete" || args[2] == "remove") parent.removeRule(message, args)
                 else parent.showHelpMenu(message)
             },
-            "check-all": () => parent.rule(message),
             "help": () => parent.showHelpMenu(message)
         }
 
