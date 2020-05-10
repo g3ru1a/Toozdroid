@@ -120,7 +120,7 @@ exports.manageRequestChatSpeakers = function (message, args) {
                 Helpers.log(message, "Work Channels - Request", "Request Channels speak perms Updated", "Successfuly removed " + `${role}` + " from <#" + channelID + "> speak perms!", color = "#de4b4b");
             },
             "default": function () {
-                message.reply("Command not found. Check available commands with `" + global.config.PREFIX + "config help`.");
+                message.reply("Command not found. Check available commands with `" + global.config.PREFIX + "request help`.");
             }
         }
 

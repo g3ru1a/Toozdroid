@@ -275,6 +275,10 @@ exports.showHelpMenu = function (message) {
     embed.addField("List all requests. (? - optional argument)", "`" + prefix + "request list <page?> <perPage?>`", true);
     if (Helpers.isMod(message))
         embed.addField("Remove all requests for a figure.", "`" + prefix + "request remove <figureName>`", true);
+    if (Helpers.isAdmin(message)) {
+        embed.addField("Add/Remove request work channel.", "`" + prefix + "request chat <add/remove> <#channel>`", true);
+        embed.addField("Add/Remove role speak perm to request work channel.", "`" + prefix + "request chat-speakers <add/remove> <#channel> <@role>`", true);
+    }
     embed.setColor(0xFF467F);
     embed.setTimestamp();
     embed.setFooter("Figure Requests Help Menu");

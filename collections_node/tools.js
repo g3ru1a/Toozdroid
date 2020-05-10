@@ -3,6 +3,7 @@ const wrapper = require("./wrapper");
 const Helpers = require("../helpers");
 const axios = require("axios");
 const checker_url = 'https://pickmaze.com/api/youtooz/getOrderItems.php?';
+const showedCollectionRecently = new Set();
 
 //#region Func. Show help embed
 exports.showHelpMenu = function (message) {
@@ -11,12 +12,16 @@ exports.showHelpMenu = function (message) {
     embed.setAuthor("Toozdroid Collection Help", message.guild.me.user.avatarURL());
     embed.setDescription("Aliases: `" + prefix + "col` or `" + prefix + "collection`");
     embed.addField("Adds a figure to your collection.", "`" + prefix + "collection add <code>`", true);
-    embed.addField("Showoff your collection.", "`" + prefix + "collection show [embed]`", true);
+    embed.addField("Showoff your collection.", "`" + prefix + "collection show`", true);
     if (Helpers.isMod(message)) {
         embed.addField("Force add a figure to a user's collection.", "`" + prefix + "collection push <FigureName> <@user>`", true);
         embed.addField("Force remove a figure from a user's collection.", "`" + prefix + "collection remove <FigureName> <@user>`", true);
-        embed.addField("Link/Unlink Figures.", "`" + prefix + "collection figs <link/unlink> <Emoji> <FigureName>`", true);
+        embed.addField("Link/Unlink Figures.", "`" + prefix + "collection figs <link/unlink> <Emoji/FigureName>`", true);
         embed.addField("Create/Remove Rank Rules.", "`" + prefix + "collection rules <add/remove> <@rank> <FigureCount>`", true);
+    }
+    if (Helpers.isAdmin(message)) {
+        embed.addField("Add/Remove collection work channel.", "`" + prefix + "collection chat <add/remove> <#channel>`", true);
+        embed.addField("Add/Remove role speak perm to collection work channel.", "`" + prefix + "collection chat-speakers <add/remove> <#channel> <@role>`", true);
     }
     embed.setColor(0xFF467F);
     embed.setTimestamp();
@@ -236,6 +241,18 @@ exports.remove = async function (message, args) {
 }
 
 exports.show = async function (message, args) {
+    if (showedCollectionRecently.has(message.author.id)) {
+        message.reply("Wait 2 minutes before showing your collection again.");
+        return;
+    } else {
+        // Adds the user to the set so that they can't talk for 2 minutes
+        showedCollectionRecently.add(message.author.id);
+        setTimeout(() => {
+            // Removes the user from the set after 2 minutes
+            showedCollectionRecently.delete(message.author.id);
+        }, 120000);
+    }
+
     let collection = await wrapper.getOwnedFiguresByUserID(message.author.id);
     if (collection.length == 0) {
         message.reply("Your collection is empty.");
@@ -301,31 +318,29 @@ exports.checkForRoles = async (message, user) => {
         //Get guild role
         let role = message.guild.roles.cache.get(rules[i].roleID);
         //If user meets role requirements
-        if (rules[i].figureCount <= figs.length) {
+        if (rules[i].figureCount <= figs.length && !member.roles.cache.has(rules[i].roleID)) {
             //Give user the role
             member.roles.add(role).catch(console.error);
 
             let embed = new Discord.MessageEmbed();
             embed.setColor(role.color);
             embed.setAuthor(user.tag, user.avatarURL());
-            embed.setTitle("Congratulations you are now a " + role.name + "!");
+            embed.setTitle("Congratulations you are now an " + role.name + "!");
             embed.setTimestamp();
 
             message.channel.send(embed);
             Helpers.log(message, "Ranks", "Role condition met", user.username + " is now a <@&" + role.id + "> !");
-        } else {
-            if (member.roles.cache.has(rules[i].roleID)) {
-                member.roles.remove(role).catch(console.error);
+        } else if (rules[i].figureCount > figs.length && member.roles.cache.has(rules[i].roleID)) {
+            member.roles.remove(role).catch(console.error);
 
-                let embed = new Discord.MessageEmbed();
-                embed.setColor("#de4ba8");
-                embed.setAuthor(user.tag, user.avatarURL());
-                embed.setTitle("Unfortunately you are no longer a " + role.name + ".");
-                embed.setTimestamp();
+            let embed = new Discord.MessageEmbed();
+            embed.setColor("#de4ba8");
+            embed.setAuthor(user.tag, user.avatarURL());
+            embed.setTitle("Unfortunately you are no longer an " + role.name + ".");
+            embed.setTimestamp();
 
-                message.channel.send(embed);
-                Helpers.log(message, "Ranks", "Role condition not met", user.username + " is no longer a <@&" + role.id + "> !");
-            }
+            message.channel.send(embed);
+            Helpers.log(message, "Ranks", "Role condition not met", user.username + " is no longer a <@&" + role.id + "> !");
         }
     }
 }
