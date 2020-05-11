@@ -1,5 +1,8 @@
-const Discord = require("discord.js");
+﻿const Discord = require("discord.js");
 const fs = require("fs");
+const RequestsTools = require("./requests_node/tools");
+const CollectionsTools = require("./collections_node/tools");
+const WikiTools = require("./wiki_node/tools");
 
 //#region [Function] Check if message is a command
 /**
@@ -275,20 +278,50 @@ exports.editDistance = function (s1, s2) {
  * @param {Discord.Message} message Discord Message object
  *
  */
-exports.showHelpMenu = function (message) {
+exports.showHelpMenu = async function (message) {
     let commandPrefix = global.config.PREFIX;
     const embed = new Discord.MessageEmbed();
     embed.setAuthor("Toozdroid Help", message.guild.me.user.avatarURL());
-    embed.addField("Show collection help", "`" + commandPrefix + "collection help`", true);
-    embed.addField("Show requests help", "`" + commandPrefix + "request help`", true);
-    embed.addField("Show wiki help", "`" + commandPrefix + "wiki help`", true);
+    embed.addField("📦 Show collection help", "`" + commandPrefix + "collection help`");
+    embed.addField("‼️ Show requests help", "`" + commandPrefix + "request help`");
+    embed.addField("📕 Show wiki help", "`" + commandPrefix + "wiki help`");
     if (this.isAdmin(message)) {
         embed.addField('\u200b', "Admin Commands");
-        embed.addField("Show configuration help", "`" + commandPrefix + "config help`", true);
+        embed.addField("Show configuration help", "`" + commandPrefix + "config help`");
     }
     embed.setColor(0xFF467F);
     embed.setTimestamp();
     embed.setFooter("Help Menu");
-    message.channel.send(embed);
+    let rep = await message.channel.send(embed);
+
+    await rep.react('📦').then(r => {
+        rep.react('‼️').then(r => {
+            rep.react('📕');
+        });
+    });
+
+    let filter = (reaction, user) => user.id == message.author.id;
+
+    let collector = rep.createReactionCollector(filter, { time: 60000 });
+
+    collector.on('collect', async (reaction, user) => {
+        let col = reaction;
+        if (col.emoji.name == '📦') {
+            await CollectionsTools.showHelpMenu(message);
+            collector.stop();
+        }
+        if (col.emoji.name == '‼️') {
+            await RequestsTools.showHelpMenu(message);
+            collector.stop();
+        }
+        if (col.emoji.name == '📕') {
+            await WikiTools.showHelpMenu(message);
+            collector.stop();
+        }
+    });
+
+    collector.on('end', collected => {
+        rep.delete();
+    });
 }
 //#endregion

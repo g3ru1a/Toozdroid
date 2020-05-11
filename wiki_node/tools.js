@@ -243,7 +243,7 @@ exports.list = async (message, args) => {
 
     let filter = (reaction, user) => user.id == authorID && (reaction.emoji.name == '⬅' || reaction.emoji.name == '➡');
 
-    let collector = rep.createReactionCollector(filter, { time: 5000 });
+    let collector = rep.createReactionCollector(filter, { time: 120000 });
 
     collector.on('collect', async (reaction, user) => {
         let col = reaction;
