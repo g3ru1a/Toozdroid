@@ -273,9 +273,12 @@ exports.showHelpMenu = function (message) {
     embed.addField("Show Request Position and Info.", "`" + prefix + "request rank <figureName>`", true);
     embed.addField("Show top n figures.", "`" + prefix + "request top <n>`", true);
     embed.addField("List all requests. (? - optional argument)", "`" + prefix + "request list <page?> <perPage?>`", true);
-    if (Helpers.isMod(message))
+    if (Helpers.isMod(message)) {
+        embed.addField('\u200b', "Mod Commands");
         embed.addField("Remove all requests for a figure.", "`" + prefix + "request remove <figureName>`", true);
+    }
     if (Helpers.isAdmin(message)) {
+        embed.addField('\u200b', "Admin Commands");
         embed.addField("Add/Remove request work channel.", "`" + prefix + "request chat <add/remove> <#channel>`", true);
         embed.addField("Add/Remove role speak perm to request work channel.", "`" + prefix + "request chat-speakers <add/remove> <#channel> <@role>`", true);
     }

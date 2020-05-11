@@ -14,12 +14,14 @@ exports.showHelpMenu = function (message) {
     embed.addField("Adds a figure to your collection.", "`" + prefix + "collection add <code>`", true);
     embed.addField("Showoff your collection.", "`" + prefix + "collection show`", true);
     if (Helpers.isMod(message)) {
+        embed.addField('\u200b', "Mod Commands");
         embed.addField("Force add a figure to a user's collection.", "`" + prefix + "collection push <FigureName> <@user>`", true);
         embed.addField("Force remove a figure from a user's collection.", "`" + prefix + "collection remove <FigureName> <@user>`", true);
         embed.addField("Link/Unlink Figures.", "`" + prefix + "collection figs <link/unlink> <Emoji/FigureName>`", true);
         embed.addField("Create/Remove Rank Rules.", "`" + prefix + "collection rules <add/remove> <@rank> <FigureCount>`", true);
     }
     if (Helpers.isAdmin(message)) {
+        embed.addField('\u200b', "Admin Commands");
         embed.addField("Add/Remove collection work channel.", "`" + prefix + "collection chat <add/remove> <#channel>`", true);
         embed.addField("Add/Remove role speak perm to collection work channel.", "`" + prefix + "collection chat-speakers <add/remove> <#channel> <@role>`", true);
     }
