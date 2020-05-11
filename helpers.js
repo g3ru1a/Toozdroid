@@ -276,6 +276,19 @@ exports.editDistance = function (s1, s2) {
  *
  */
 exports.showHelpMenu = function (message) {
-    message.reply("help menu");
+    let commandPrefix = global.config.PREFIX;
+    const embed = new Discord.MessageEmbed();
+    embed.setAuthor("Toozdroid Help", message.guild.me.user.avatarURL());
+    embed.addField("Show collection help", "`" + commandPrefix + "collection help`", true);
+    embed.addField("Show requests help", "`" + commandPrefix + "request help`", true);
+    embed.addField("Show wiki help", "`" + commandPrefix + "wiki help`", true);
+    if (this.isAdmin(message)) {
+        embed.addField('\u200b', "Admin Commands");
+        embed.addField("Show configuration help", "`" + commandPrefix + "config help`", true);
+    }
+    embed.setColor(0xFF467F);
+    embed.setTimestamp();
+    embed.setFooter("Help Menu");
+    message.channel.send(embed);
 }
 //#endregion
