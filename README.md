@@ -49,19 +49,3 @@ Toozdroid **v2** update is complete, fixed efficiency issues, changed most of th
 | Release Date |
 | Status |
 | Author |
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.1.2/mermaid.min.js"></script>
-<script>
-mermaid.initialize({startOnLoad:true});
-</script>
-
-### Table Relations
-```html
-<div class="mermaid">
-    graph LR
-    A{User} -- UserID --> B[Figure Request Votes]
-    C(Figure Request) -- RequestID --> B
-    D(Figure) -- FigureID --> E[Owned Figures]
-    A -- UserID --> E
-</div>
-```
