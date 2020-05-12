@@ -225,42 +225,41 @@ exports.list = async function (message, args) {
     let authorID = message.author.id;
     // Reacts so the user only have to click the emojis
     await rep.react('⬅').then(r => {
-        rep.react('➡').then(rr => {
-            rep.react('❌');
-        });
+        rep.react('➡');
     });
-    let error = null;
-    let parent = this;
-    while (error == null) {
-        // First argument is a filter function
-        await rep.awaitReactions((reaction, user) => user.id == authorID && (reaction.emoji.name == '⬅' || reaction.emoji.name == '➡' || reaction.emoji.name == '❌'),
-            { max: 1, time: 120000 }).then(async function (collected) {
-                let col = collected.first();
-                if (col == undefined) return;
-                if (col.emoji.name == '❌') {
-                    col.message.reactions.cache.forEach(reaction => reaction.users.remove(authorID));
-                    error = "crack";
-                    return;
-                } else if (col.emoji.name == '⬅') {
-                    if (page <= 1) {
-                        col.message.reactions.cache.forEach(reaction => reaction.users.remove(authorID));
-                        return;
-                    }
-                    page--;
-                }
-                else {
-                    if (page >= maxPage) {
-                        col.message.reactions.cache.forEach(reaction => reaction.users.remove(authorID));
-                        return;
-                    }
-                    page++;
-                }
-                let embed = parent.getPageEmbed(page, perPage, requests, message);
-                await rep.edit(embed);
+
+    let filter = (reaction, user) => user.id == authorID && (reaction.emoji.name == '⬅' || reaction.emoji.name == '➡');
+
+    let collector = rep.createReactionCollector(filter, { time: 5000 });
+
+    collector.on('collect', async (reaction, user) => {
+        let col = reaction;
+        if (col.emoji.name == '⬅') {
+            if (page <= 1) {
                 col.message.reactions.cache.forEach(reaction => reaction.users.remove(authorID));
-            }).catch();
-    }
-    rep.delete({ timeout: 10000 }).then(message.delete()).catch();
+                collector.resetTimer();
+                return;
+            }
+            page--;
+        }
+        else {
+            if (page >= maxPage) {
+                col.message.reactions.cache.forEach(reaction => reaction.users.remove(authorID));
+                collector.resetTimer();
+                return;
+            }
+            page++;
+        }
+        let embed = this.getPageEmbed(page, perPage, requests, message);
+        await rep.edit(embed);
+        col.message.reactions.cache.forEach(reaction => reaction.users.remove(authorID));
+        collector.resetTimer();
+    });
+
+    collector.on('end', collected => {
+        rep.delete().then(message.reply('No activity for 2 minutes, closing List.').then(r => r.delete({ timeout: 20000 })));
+    });
+    
 }
 
 exports.showHelpMenu = function (message) {
